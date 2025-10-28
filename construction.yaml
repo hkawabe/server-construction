@@ -1,0 +1,6 @@
+---
+- name: Construction Servers
+  hosts: pve
+  roles:
+    - { role: pve, tags: pve }
+    - { role: k8s-template, tags: k8s-template }

@@ -1,0 +1,50 @@
+---
+- name: apt update && apt upgrade
+  apt: update_cache=yes upgrade=yes
+
+- name: Install necessary packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    with_items:
+      - curl
+      - software-properties-comm
+      - iptables
+      - arptables
+      - ebtables
+
+- name: Reload sysctl configuration
+  ansible.builtin.command: >
+    update-alternatives --set iptables /usr/sbin/iptables-legacy
+    update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+    update-alternatives --set arptables /usr/sbin/arptables-legacy
+    update-alternatives --set ebtables /usr/sbin/ebtables-legacy
+
+- name: Install container runtime (Containerd)
+  include: containerd.yaml
+  when: containerd_install
+
+- name: Install container runtime (CRI-O)
+  include: crio.yaml
+  when: crio_install
+
+- name: Download Kubernetes APT key
+  ansible.builtin.get_url:
+    url: "https://pkgs.k8s.io/core:/stable:{{ kubernetes_version }}/deb/Release.key"
+    dest: /tmp/kubernetes-release.key
+    mode: '0644'
+
+- name: Convert key to GPG format
+  ansible.builtin.command:
+    cmd: gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg /tmp/kubernetes-release.key
+    creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  become: true
+
+- name: Install kubernetes
+  apt:
+    name: "{{ item }}"
+    state: present
+    with_items:
+      - kubelet
+      - kubeadm
+      - kubectl

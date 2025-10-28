@@ -1,0 +1,24 @@
+---
+- name: Make nfs export directory
+  file:
+    path: {{ nfs_export_path | default('/srv/nfs4/home') }}
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: "775"
+
+- name: Add nfs export
+  ansible.builtin.template:
+    src: templates/exports.j2  # ローカルのテンプレートファイル
+    dest: /etc/exports # リモートホスト上の出力ファイル
+    mode: '0644'
+
+- name: Install nfs server
+  apt:
+    name: nfs-server
+    state: present
+
+- name: Restart nfs server
+  systemd:
+    name: nfs-server
+    state: restarted
