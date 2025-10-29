@@ -1,7 +1,7 @@
 ---
 - name: Make nfs export directory
   file:
-    path: {{ nfs_export_path | default('/srv/nfs4/home') }}
+    path: "{{ nfs_export_path | default('/srv/nfs4/home') }}"
     state: directory
     owner: "root"
     group: "root"

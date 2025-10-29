@@ -1,3 +1,0 @@
----
-os_template_name: ubuntu-24.04-standard_24.04-2_amd64.tar.gz
-nfs_export_path: /srv/nfs4/home

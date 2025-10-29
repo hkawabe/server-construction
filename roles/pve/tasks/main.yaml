@@ -1,24 +1,41 @@
 ---
+- name: Update APT cache and upgrade all packages
+  ansible.builtin.apt:
+    update_cache: yes
+    upgrade: dist
+
+- name: Ensure pip3 is installed
+  ansible.builtin.apt:
+    name: python3-pip
+    state: present
+
+- name: Install proxmoxer via apt
+  apt:
+    name:
+      - python3-proxmoxer
+      - python3-requests
+    state: present
+    update_cache: yes
+
 - name: Download proxmox appliance container template
   community.proxmox.proxmox_template:
+    api_host: "{{ api_host }}"
+    api_user: "{{ api_user }}"
+    api_token_id: "{{ api_token_id }}"
+    api_token_secret: "{{ api_token_secret }}"
     node: pve
-    api_user: root@pam
-    api_password: 1q2w3e
-    api_host: pve
     storage: local
     content_type: vztmpl
-    template: {{ os_template_name }}
-
-- name: Apt update & Apt upgrade
-  apt: update_cache=yes upgrade=yes
+    template: "{{ os_template_name }}"
+    timeout: 600
 
 - name: Add necessary modules for Kubernetes
   community.general.modprobe:
     name: "{{ item }}"
     state: present
-    with_items:
-      - nf_conntrack
-      - overlay
+  with_items:
+    - nf_conntrack
+    - overlay
 
 - name: Fix sysctl parameters for Kubernetes
   sysctl:
@@ -28,5 +45,5 @@
     sysctl_set: yes
     reload: yes
 
-- include: nfs.yaml
+- include_tasks: nfs.yaml
 
