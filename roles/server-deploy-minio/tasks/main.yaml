@@ -1,0 +1,23 @@
+---
+- name: Create directory for service
+  file:
+    path: "{{ items }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /srv/docker/minio
+
+- name: Deploy docker-compose.yml
+  template:
+    src: templates/docker-compose_minio.yaml
+    dest: /opt/docker-compose.yml
+    mode: '0644'
+
+- name: Deploy Minio
+  collections:
+    - community.docker
+  tasks:
+    - name: Start services with docker compose
+      docker_compose:
+        project_src: /opt
+        state: present

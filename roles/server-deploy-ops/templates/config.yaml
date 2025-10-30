@@ -1,0 +1,9 @@
+global:
+  smtp_smarthost: 'localhost:25'
+  smtp_from: 'alertmanager@"{{ hostname }}"'
+route:
+  receiver: 'team-operator-mails'
+receivers:
+- name: 'team-operator-mails'
+  email_configs:
+  - to: "{{ alertmanager_mailto }}"

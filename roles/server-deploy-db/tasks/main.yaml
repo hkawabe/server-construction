@@ -1,0 +1,26 @@
+---
+- name: Create directory for service
+  file:
+    path: "{{ items }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /srv/docker/postgresql
+    - /srv/docker/mysql/data
+    - /srv/docker/mysql/conf
+    - /srv/docker/mongodb
+
+- name: Deploy docker-compose.yml
+  template:
+    src: templates/docker-compose_db.yaml
+    dest: /opt/docker-compose.yml
+    mode: '0644'
+
+- name: Deploy Postgresql, Mariadb, Mongodb and adminer
+  collections:
+    - community.docker
+  tasks:
+    - name: Start services with docker compose
+      docker_compose:
+        project_src: /opt
+        state: present

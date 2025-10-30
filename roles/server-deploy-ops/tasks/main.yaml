@@ -1,0 +1,36 @@
+---
+- name: Create directory for service
+  file:
+    path: "{{ items }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /srv/docker/alertmanager
+    - /srv/docker/prometheus
+
+- name: Deploy docker-compose.yml
+  template:
+    src: templates/docker-compose_ops.yaml
+    dest: /opt/docker-compose.yml
+    mode: '0644'
+
+- name: Put configration file for prometheus
+  file:
+    source: templates/prometheus.yaml
+    dest: /srv/docker/prometheus/prometheus.yaml
+    state: present
+
+- name: Put configration file for alertmanager
+  file:
+    source: templates/config.yaml
+    dest: /srv/docker/prometheus/config.yaml
+    state: present
+
+- name: Deploy Prometheus, Grafana and Alertmanager
+  collections:
+    - community.docker
+  tasks:
+    - name: Start services with docker compose
+      docker_compose:
+        project_src: /opt
+        state: present

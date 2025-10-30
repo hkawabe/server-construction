@@ -1,0 +1,5 @@
+---
+postgresql_port: 5432
+mariadb_port: 3306
+mongodb_port: 27017
+adminer_port: 80

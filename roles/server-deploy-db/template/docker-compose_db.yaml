@@ -1,0 +1,47 @@
+services:
+
+  postgresql:
+    container_name: postgresql
+    image: postgres: "{{ postgresql_version }}"
+    restart: always
+    ports:
+      - "{{ postgresql_port | default('5432') }}:5432"
+    volumes:
+      - /srv/docker/postgresql:/var/lib/postgresql
+    environment:
+      TZ: "Asia/Tokyo"
+      POSTGRES_PASSWORD: password
+      POSTGRES_INITDB_ARGS: '--encoding=UTF-8 --locale=C'
+
+  mariadb:
+    container_name: mysql
+    image: mariadb: "{{ mariadb_version }}"
+    restart: always
+    ports:
+      - "{{ mariadb_port | default('3306') }}:3306"
+    volumes:
+      - /srv/docker/mysql/data:/var/lib/postgresql
+      - /srv/docker/mysql/conf:/etc/mysql/conf.d
+    environment:
+      TZ: "Asia/Tokyo"
+      MARIADB_ROOT_PASSWORD: password
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:"{{ mongodb_version }}"
+    restart: always
+    ports:
+      - "{{ mongodb_port | default('27017')}}:27017"
+    volumes:
+      - /srv/docker/mongodb:/data/db
+    environment:
+      TZ: "Asia/Tokyo"
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+  adminer:
+    container_name: adminer
+    image: adminer:"{{ adminer_version }}"
+    restart: always
+    ports:
+      - "{{ adminer_port | default('8080') }}:8080"

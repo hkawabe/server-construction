@@ -11,18 +11,18 @@
 
 - name: Deploy docker-compose.yml
   template:
-    src: templates/docker-compose.yaml_gitlab
+    src: templates/docker-compose_gitlab.yaml
     dest: /opt/docker-compose.yml
     mode: '0644'
 
-- name: Deploy GitLab and once stop services
+- name: Deploy GitLab
   collections:
     - community.docker
   tasks:
     - name: Start services with docker compose
       docker_compose:
         project_src: /opt
-        state: down
+        state: present
 
 - name: Backup configuration file (gitlab.rb)
   file:

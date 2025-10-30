@@ -1,0 +1,16 @@
+services:
+
+  minio:
+    container_name: minio
+    image: quay.io/minio/minio:"{{ minio_version }}"
+    restart: always
+    ports:
+      - "{{ minio_port | default('9000') }}:9000"
+      - "{{ minio_console_port | default('9001') }}":9001"
+    volumes:
+      - /srv/docker/minio:/data
+    environment:
+      TZ: "Asia/Tokyo"
+      MINIO_ROOT_USER: "root"
+      MINIO_ROOT_PASSWORD: "password"
+    command: server --console-address ":{{ minio_console_port | default('9001') }}" /data
