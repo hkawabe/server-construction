@@ -1,0 +1,75 @@
+---
+- name: apt update && apt upgrade
+  apt: update_cache=yes upgrade=yes
+
+- name: Install necessary packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - curl
+    - software-properties-common
+    - iptables
+    - arptables
+    - ebtables
+
+- name: Set iptables/ebtables to legacy using loop
+  ansible.builtin.command:
+    cmd: "update-alternatives --set {{ item.name }} {{ item.path }}"
+  loop:
+    - { name: "iptables",  path: "/usr/sbin/iptables-legacy" }
+    - { name: "ip6tables", path: "/usr/sbin/ip6tables-legacy" }
+    - { name: "arptables", path: "/usr/sbin/arptables-legacy" }
+    - { name: "ebtables", path: "/usr/sbin/ebtables-legacy" }
+
+- name: Install container runtime (Containerd)
+  include_tasks: containerd.yaml
+  when: containerd_install
+
+- name: Install container runtime (CRI-O)
+  include_tasks: crio.yaml
+  when: crio_install
+
+- name: Create keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Download Kubernetes APT key
+  ansible.builtin.get_url:
+    url: "https://pkgs.k8s.io/core:/stable:/{{ kubernetes_version }}/deb/Release.key"
+    dest: /etc/apt/keyrings/kubernetes-release.key
+    mode: '0644'
+  become: true
+
+- name: Convert key to GPG format
+  ansible.builtin.command:
+    cmd: gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg /etc/apt/keyrings/kubernetes-release.key
+    creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  become: true
+
+- name: Add Kubernetes APT repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/{{ kubernetes_version }}/deb/ /"
+    state: present
+  become: true
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+  become: true
+
+- name: Install Kubernetes packages
+  ansible.builtin.apt:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
+    update_cache: yes
+
+- name: Hold Kubernetes packages to prevent automatic upgrade
+  ansible.builtin.command: >
+    apt-mark hold kubelet kubeadm kubectl

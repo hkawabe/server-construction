@@ -5,11 +5,6 @@
     state: present
 
 - name: Add containerd config
-  file:
-    path: /etc/containerd/config.toml
-    state: touch
-
-- name: Add containerd config
   ansible.builtin.command: >
     containerd config default | tee /etc/containerd/config.toml
     if grep -q "SystemdCgroup = true" "/etc/containerd/config.toml"; 

@@ -1,0 +1,36 @@
+---
+- name: Set up master node
+  shell: |
+    kubeadm init \
+    --pod-network-cidr=10.244.0.0/16 \
+    --ignore-preflight-errors=SystemVerification
+
+- name: Store token
+  shell: kubeadm token list | awk 'NR==2{print $1}'
+  register: token
+
+- name: replace worker var "token"
+  lineinfile:
+    path: ./vars/vars.yaml
+    regexp: "^token:"
+    line: "token: {{ token.stdout }} "
+    state: present
+  delegate_to: localhost
+  become: no
+
+- name: Store token ca cert hash
+  shell: |
+    openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt \
+    | openssl rsa -pubin -outform der 2>/dev/null \
+    | openssl dgst -sha256 -hex \
+    | sed 's/^.* //'
+  register: ca_cert_hash
+
+- name: replace worker var "hash"
+  lineinfile:
+    path: ./vars/vars.yaml
+    regexp: "^hash:"
+    line: "hash: {{ ca_cert_hash.stdout }} "
+    state: present
+  delegate_to: localhost
+  become: no

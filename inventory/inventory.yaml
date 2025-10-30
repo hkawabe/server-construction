@@ -1,0 +1,26 @@
+all:
+  children:
+    pve:
+      hosts:
+        192.168.5.2:
+          ansible_user: root
+          ansible_password: natsu64330
+          api_host: 192.168.5.2
+          api_user: root@pam
+          api_password: natsu64330
+          api_token_id: ansible
+          api_token_secret: 51efd333-84e7-4087-b1c0-2daf9d0b175b
+
+    k8s-template:
+      hosts:
+        192.168.5.19:
+          ansible_user: root
+          ansible_ssh_private_key_file: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa"
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+
+    master:
+      hosts:
+        192.168.5.11:
+          ansible_user: root
+          ansible_ssh_private_key_file: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa"
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'

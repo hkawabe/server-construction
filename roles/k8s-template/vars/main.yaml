@@ -1,8 +1,6 @@
 container_password: password
 cpu_cores: 4
-memory_size: 8Gi
+memory_size: 8192
 swap_size: 0
-disk_size: 30Gi
-nameserver_ipaddr: 192.168.5.1
-searchdomain: hkawabe.net
-pubkey:
+disk_size: 30
+

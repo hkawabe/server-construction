@@ -1,0 +1,6 @@
+---
+- name: Configure template container
+  include_tasks: configure.yaml
+
+- name: Install packages into template container
+  include_tasks: install.yaml
