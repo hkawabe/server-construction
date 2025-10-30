@@ -1,0 +1,17 @@
+---
+## 各種サーバ用のコンテナテンプレート構築
+- name: Configure kubernetes template container
+  hosts: server-template
+  gather_facts: false
+  vars_files:
+    - envs/envs.yaml
+  roles:
+    - { role: server-create-template, tags: server-create-template }
+
+
+- name: Clone containers for servers
+  hosts: pve
+  vars_files:
+    - envs/envs.yaml
+  roles:
+    - { role: k8s-clone-container, tags: k8s-clone-container }

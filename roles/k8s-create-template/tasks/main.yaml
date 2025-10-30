@@ -7,7 +7,7 @@
     vmid: "{{ k8s_template_id }}"
     node: pve
     password: "{{ container_password | default('password')}}"
-    hostname: k8s-template
+    hostname: k8s-create-template
     ostemplate: 'local:vztmpl/{{ os_template_name }}'
     timezone: Asia/Tokyo
     unprivileged: false
@@ -49,7 +49,7 @@
     api_password: "{{ api_password }}"
     vmid: "{{ k8s_template_id }}"
     node: pve
-    hostname: k8s-template
+    hostname: k8s-create-template
     state: started
     timeout: 120
 

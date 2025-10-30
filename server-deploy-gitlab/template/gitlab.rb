@@ -1,0 +1,11 @@
+external_url 'https://"{{ gitlab_hostname }}"'
+gitlab_rails['time_zone'] = 'Asia/Tokyo'
+registry_external_url 'https://"{{ gitlab_hostname }}":5050'
+gitlab_rails['registry_host'] = '"{{ gitlab_hostname }}"'
+gitlab_rails['registry_port'] = '5050'
+gitlab_rails['registry_path'] = /var/opt/gitlab/gitlab-rails/shared/registry'
+nginx['listen_addresses'] = ['*', '[::]']
+registry['registry_http_addr'] = '0.0.0.0:5050'
+registry_nginx['ssl_certificate'] = '/etc/gitlab/ssl/"{{ gitlab_hostname }}".net.crt'
+registry_nginx['ssl_certificate_key'] = '/etc/gitlab/ssl/"{{ gitlab_hostname }}".key'
+gitlab_workhorse['upload_max_size'] = '2048m'

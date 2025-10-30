@@ -1,0 +1,12 @@
+- name: Download NFS CSI manifests
+  get_url:
+    url: "https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/{{ nfs_csi_driver_version }}/deploy/install-driver.sh"
+    dest: "/tmp/install-driver.sh"
+    mode: '0755'
+
+- name: Install NFS CSI driver from local script
+  shell: /tmp/install-driver.sh "{{ nfs_csi_driver_version }}" --
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+

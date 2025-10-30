@@ -5,7 +5,7 @@
     api_user: "{{ api_user }}"
     api_password: "{{ api_password }}"
     node: pve
-    vmid: "{{ k8s_template_id }}"
+    vmid: "{{ server_template_id }}"
     state: stopped
 
 - name: Convert container to template
@@ -14,7 +14,7 @@
     api_user: "{{ api_user }}"
     api_password: "{{ api_password }}"
     node: pve
-    vmid: "{{ k8s_template_id }}"
+    vmid: "{{ server_template_id }}"
     state: template
 
 - name: Create a full clone of the template container
@@ -24,13 +24,13 @@
     api_password: "{{ api_password }}"
     node: pve
     vmid: "{{ item.container_id }}"
-    clone: "{{ k8s_template_id }}"
+    clone: "{{ server_template_id }}"
     hostname: "{{ item.hostname }}"
-    clone_type: linked
+    clone_type: full
     state: present
-  loop: "{{ k8s_clone_list }}"
+  loop: "{{ server_clone_list }}"
 
-- name: Set container IP
+- name: Fix container parameters
   community.proxmox.proxmox:
     api_host: "{{ api_host }}"
     api_user: "{{ api_user }}"
@@ -38,10 +38,16 @@
     node: pve
     vmid: "{{ item.container_id }}"
     hostname: "{{ item.hostname }}"
+    cores: "{{ item.cores }}"
+    memory: "{{ item.memory }}"
     netif:
       net0: "name=eth0,bridge=vmbr0,ip={{ item.ipaddr }},gw={{ gateway_ipaddr }}"
     state: present
-  loop: "{{ k8s_clone_list }}"
+  loop: "{{ server_clone_list }}"
+
+- name: Extent disk size
+  ansible.builtin.command: >
+    pct {{ item.container_id }} resize {{ item.disk_size }}  
 
 - name: Start the cloned containers
   community.general.proxmox:
@@ -51,7 +57,7 @@
     node: pve
     vmid: "{{ item.container_id }}"
     state: started
-  loop: "{{ k8s_clone_list }}"
+  loop: "{{ server_clone_list }}"
 
 - name: Wait for containers to be ready asynchronously
   wait_for:
@@ -59,7 +65,7 @@
     port: 22
     delay: 10
     timeout: 300
-  loop: "{{ k8s_clone_list }}"
+  loop: "{{ server_clone_list }}"
   loop_control:
     label: "{{ item.hostname }}"
   async: 300

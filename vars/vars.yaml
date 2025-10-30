@@ -1,2 +1,70 @@
-token:  
-hash: 2c192e810c7d5fb58708354435bbeffcd7473bb3d356be65496458055ac70498 
+---
+os_template_name: ubuntu-24.04-standard_24.04-2_amd64.tar.zst
+containerd_install: true
+crio_install: false
+flannel_install: true
+calico_install: false
+nfs_export_path: /srv/nfs4/home
+k8s_template_id: 6000
+server_template_id: 1001
+network_address: 192.168.5.0/24
+k8s_template_ipaddr: 192.168.5.19
+server_template_ipaddr: 192.168.5.20
+nameserver_ipaddr: 192.168.5.1
+gateway_ipaddr: 192.168.5.254
+searchdomain: hkawabe.net
+kubernetes_version: v1.34
+nfs_csi_driver_version: v4.12.1
+k8s_clone_list:
+  - container_id: 6001
+    hostname: master
+    ipaddr: 192.168.5.11/24
+  - container_id: 6002
+    hostname: node01
+    ipaddr: 192.168.5.12/24
+  - container_id: 6003
+    hostname: node02
+    ipaddr: 192.168.5.13/24
+  - container_id: 6004
+    hostname: node03
+    ipaddr: 192.168.5.14/24
+server_clone_list:
+  - container_id: 1002
+    hostname: gitlab
+    cores: 4
+    memory: 12288
+    disk: 81920
+    ipaddr: 192.168.5.2/24
+  - container_id: 1003
+    hostname: gw
+    cores: 1
+    memory: 512
+    disk: 512
+    ipaddr: 192.168.5.3/24
+  - container_id: 1004
+    hostname: ops
+    cores: 2
+    memory: 1024
+    disk: 2048
+    ipaddr: 192.168.5.4/24
+  - container_id: 1005
+    hostname: db
+    cores: 2
+    memory: 4096
+    disk: 10240
+    ipaddr: 192.168.5.5/24
+  - container_id: 1006
+    hostname: minio
+    cores: 1
+    memory: 1024
+    disk: 10240
+    ipaddr: 192.168.5.6/24
+  - container_id: 1007
+    hostname: ai
+    cores: 4
+    memory: 24576
+    disk: 30720
+    ipaddr: 192.168.5.7/24
+gitlab_version: 18.3.5-ce.0
+gitlab_hostname: gitlab.hkawabe.net
+pubkey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/+yHkGUseupCprgEp++DhvCRycSKAAx33uTOp/adLh3mch7JeBBsJgjL4X1Y6xxCuLR77FyJtuy+wVMpzQCSvZ0xokVEb+dxg9+z2+YXkxVPRqzrjdEO0iOt/9PDuJdmaafuiMw9SYEe/lg8fapedEe73Qdc2mkqdUT6HvfBQHyxK87E4AmehJuUGNWNgmYBj6/IY+/R1Kkfgw3NVODNqVuCm6ULrTPR3wpOHE8FsWulD+2ijD1FZ1n4Au6CR+zgyOoHBcK/YMp8XzR6cKcEN+YKrGU7NyJVCwDf+VtbucVO7ERj4Vu3+0Q0AbYnwNmRL3rrxgMqhg5b4zh7Scn7I9XmY/AlBNPVnodGY/sWR1nLJaJeD4tRVtQAHVYsunCaPaMp8U7ixsUobtW36+J+nF+ZWt+1w6d2E/jWZxdLC2ycyKboC0/Npi5/8kwtmvNRo8eHn2rz1ASqV3RPgB1GJYvgNYOHwVjOd8tupVCaXh7K7QL0y6ppPMbxLKyKqS1M= hiraku@astra.local

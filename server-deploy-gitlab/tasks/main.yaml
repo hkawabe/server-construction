@@ -1,0 +1,53 @@
+---
+- name: Create directory for service
+  file:
+    path: "{{ items }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /srv/docker/gitlab/config
+    - /srv/docker/gitlab/data
+    - /srv/docker/gitlab/logs
+
+- name: Deploy docker-compose.yml
+  template:
+    src: templates/docker-compose.yaml_gitlab
+    dest: /opt/docker-compose.yml
+    mode: '0644'
+
+- name: Deploy GitLab and once stop services
+  collections:
+    - community.docker
+  tasks:
+    - name: Start services with docker compose
+      docker_compose:
+        project_src: /opt
+        state: down
+
+- name: Backup configuration file (gitlab.rb)
+  file:
+    source: /srv/docker/gitlab/config/gitlab.rb
+    dest: /srv/docker/gitlab/config/gitlab.rb.bak
+    state: present
+
+- name: Fix configration file (gitlab.rb)
+  file:
+    source: templates/gitlab.rb
+    dest: /srv/docker/gitlab/config/gitlab.rb
+    state: present
+
+- name: Reconfigure and restart services
+  collections:
+    - community.docker
+  tasks:
+    - name: Execute gitlab-ctl reconfigure
+      docker_exec:
+        container: giltab
+        command: gitlab-ctl reconfigure && gitlab-ctl restart
+      register: result
+
+    - name: Show output
+      debug:
+        var: result.stdout
+
+

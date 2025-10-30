@@ -1,0 +1,50 @@
+---
+
+## ProxmoxサーバのKubernetes対応設定
+- name: Construction Servers
+  hosts: pve
+  vars_files:
+    - envs/envs.yaml
+  roles:
+    - { role: pve, tags: pve }
+    - { role: k8s-create-template, tags: k8s-create-template }
+
+## Kubernetesノード用のコンテナテンプレート構築
+- name: Provision for kubernetes template container
+  hosts: k8s-template
+  gather_facts: false
+  vars_files:
+    - envs/envs.yaml
+  roles:
+    - { role: k8s-provision-template, tags: k8s-provision-template }
+
+- name: Clone containers
+  hosts: pve
+  vars_files:
+    - envs/envs.yaml
+  roles:
+    - { role: k8s-clone-container, tags: k8s-clone-container }
+
+- name: Initialize cluster (control plane)
+  hosts: master
+  gather_facts: false
+  vars_files:
+    - envs/envs.yaml
+  roles:
+    - { role: k8s-init-master, tags: k8s-init-master }
+
+- name: Initialize cluster (worker node)
+  hosts: worker
+  gather_facts: false
+  vars_files:
+    - envs/envs.yaml
+  roles:
+    - { role: k8s-init-worker, tags: k8s-init-worker }
+
+- name: Deploy CNI plugin, CSI driver and MetalLB to cluster
+  hosts: master
+  gather_facts: false
+  vars_files:
+    - envs/envs.yaml
+  roles:
+    - { role: k8s-deploy-components, tags: k8s-deploy-components }

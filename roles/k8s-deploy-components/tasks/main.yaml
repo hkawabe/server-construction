@@ -1,0 +1,14 @@
+---
+- name: Install NFS CSI driver
+  include_tasks: nfs_csi.yaml
+
+- name: Install CNI plugin
+  include_tasks: cni.yaml
+
+- name: Install MetalLB
+  include_tasks: metallb.yaml
+
+- name: Confirm cluster is ready
+  command: kubectl get nodes -o wide
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

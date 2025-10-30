@@ -1,0 +1,17 @@
+---
+- name: restore token
+  shell: cat ./vars/vars.yaml | grep token | awk '{print $2}'
+  register: token
+
+- name: restore hash
+  shell: cat ./vars/vars.yaml | grep hash | awk '{print $2}'
+  register: hash
+
+- name: Set up worker node
+  shell: |
+    kubeadm join \
+    --ignore-preflight-errors=SystemVerification \
+    --token  {{ token.stdout }} \\
+    --discovery-token-ca-cert-hash {{ hash.stdout }}
+  args:
+    creates: /etc/kubernetes/kubelet.conf

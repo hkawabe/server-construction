@@ -1,0 +1,17 @@
+services:
+
+  gitlab:
+    container_name: gitlab
+    image: gitlab/gitlab-ce:"{{ gitlab_version }}"
+    restart: always
+    hostname: 'gitlab.hkawabe.net'
+    ports:
+      - '80:80'
+      - '443:443'
+      - '20022:22'
+      - '5050:5050'
+    volumes:
+      - '/srv/docker/gitlab/config:/etc/gitlab'
+      - '/srv/docker/gitlab/logs:/var/log/gitlab'
+      - '/srv/docker/gitlab/data:/var/opt/gitlab'
+    shm_size: '256m'
